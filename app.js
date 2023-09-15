@@ -54,6 +54,6 @@ app.use((err, req, res, next) => {
 
 // app listening
 app.listen(app.get("port"), (req, res) => {
-  logger.log(`Server running on PORT ${app.get("port")}...`);
+  logger.info(`Server running on PORT ${app.get("port")}...`);
   console.log(`Server running on PORT ${app.get("port")}...`);
 });
