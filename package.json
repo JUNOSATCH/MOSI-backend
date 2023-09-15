@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "sudo ENV=production PORT=80 pm2 start app.js",
+    "start": "sudo ENV=production PORT=8080 pm2 start app.js",
     "dev": "nodemon app",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
