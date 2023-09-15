@@ -1,0 +1,76 @@
+const express = require("express");
+const bcrypt = require("bcrypt");
+const passport = require("passport");
+
+const db = require("../config/database");
+const { isLoggedIn, isNotLoggedIn } = require("./middlewares");
+const logger = require("../config/logger");
+
+
+const router = express.Router();
+
+// join
+router.post("/join", isNotLoggedIn, async (req, res) => {
+  const { email, name, password } = req.body;
+
+  const result = await db.query("select * from users where email=?", [email]);
+  const user = result[0][0];
+  if (user) return res.json({ success: false, msg: "user already exists" });
+  try {
+    const hash = await bcrypt.hash(password, 12);
+    const newUser = {
+      email,
+      name,
+      password: hash
+    };
+    await db.query("insert into users(email, nick, password) value(?, ?, ?);", [newUser.email, newUser.name, newUser.password]);
+    res.status(200).json({ success: true, msg: "user joined successfully" });
+  } catch(err) {
+    logger.error(err);
+    console.error(err);
+    next(err);
+  }
+});
+
+// login
+router.post("/login", isNotLoggedIn, (req, res, next) => {
+  passport.authenticate("local", (errAuth, user, info) => {
+    if (errAuth) {
+      logger.error(errAuth);
+      console.error(errAuth);
+      next(errAuth);
+    }
+    if (!user) return res.status(200).json({ success: false, msg: info.msg });
+    return req.login(user, (errLogin) => {
+      if (errLogin) {
+        logger.error(errLogin);
+        console.error(errLogin);
+        next(errLogin);
+      }
+      res.status(200).json({ msg: "logged in successfully" });
+    });
+  })(req, res, next);
+});
+
+// logout
+router.get("/logout", isLoggedIn, (req, res, next) => {
+  req.logout((err) => {
+    if (err) {
+      logger.error(err);
+      console.error(err);
+      next(err);
+    } else {
+      req.session.destroy();
+      res.status(200).json({ success: true, msg: "logged out successfully" });
+    }
+  });
+})
+
+// check
+router.get("/check", (req, res) => {
+  if (req.user) res.json({ msg: "logged in" });
+  else res.json({ msg: "not logged in" });
+});
+
+
+module.exports = router;
