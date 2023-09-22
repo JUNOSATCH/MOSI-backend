@@ -11,6 +11,7 @@ const cors = require("cors");
 // import files
 const authRouter = require("./routes/auth");
 const teachersRouter = require("./routes/teachers");
+const callRouter = require("./routes/call");
 const passportConfig = require("./passport/index");
 
 // config
@@ -44,6 +45,7 @@ app.use(passport.session());
 // routers
 app.use("/auth", authRouter);
 app.use("/teachers", teachersRouter);
+app.use("/call", callRouter);
 
 app.use((req, res) => {
   const err = new Error(`${req.method} ${req.url} 라우터가 없습니다.`);

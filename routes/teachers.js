@@ -16,7 +16,7 @@ const getAll = async () => {
   return teachers;
 }
 
-router.get("/all", isLoggedIn, async (req, res, next) => {
+router.get("/all", async (req, res, next) => {
   try {
     const teachers = await getAll();
     res.status(200).json({ success: true, teachers });
@@ -26,7 +26,7 @@ router.get("/all", isLoggedIn, async (req, res, next) => {
   }
 });
 
-router.get("/classroom/:classroom", isLoggedIn, async (req, res, next) => {
+router.get("/classroom/:classroom", async (req, res, next) => {
   try {
     const classroom = decodeURI(req.params.classroom);
     const teacher = await getHomeroom(classroom);
@@ -37,7 +37,7 @@ router.get("/classroom/:classroom", isLoggedIn, async (req, res, next) => {
   }
 });
 
-router.get("/main/:classroom", isLoggedIn, async (req, res, next) => {
+router.get("/main/:classroom", async (req, res, next) => {
   try {
     const classroom = decodeURI(req.params.classroom);
     const homeroom = await getHomeroom(classroom);
