@@ -9,7 +9,7 @@ const logger = require("../config/logger");
 module.exports = () => {
   passport.use(new LocalStrategy(
     {
-      usernameField: "email",
+      usernameField: "id",
       passwordField: "password",
     },
     async (email, password, done) => {
