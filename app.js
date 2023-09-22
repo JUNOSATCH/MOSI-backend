@@ -6,6 +6,7 @@ const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const passport = require("passport");
 const logger = require("./config/logger");
+const cors = require("cors");
 
 // import files
 const authRouter = require("./routes/auth");
@@ -22,6 +23,7 @@ const app = express();
 app.set("port", process.env.PORT || 8080);
 
 // middlewares
+app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
