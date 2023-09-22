@@ -9,21 +9,54 @@ const logger = require("../config/logger");
 
 const router = express.Router();
 
-// join
-router.post("/join", isNotLoggedIn, async (req, res) => {
-  const { email, name, password } = req.body;
+// teacher join
+router.post("/join/teacher", isNotLoggedIn, async (req, res, next) => {
+  const { id, name, password, classroom, subject } = req.body;
 
-  const result = await db.query("select * from users where email=?", [email]);
+  const result = await db.query("select * from users where email=?", [id]);
   const user = result[0][0];
   if (user) return res.json({ success: false, msg: "user already exists" });
   try {
     const hash = await bcrypt.hash(password, 12);
     const newUser = {
-      email,
+      id,
       name,
-      password: hash
+      password: hash,
+      classroom,
+      subject,
+      type: "teacher"
     };
-    await db.query("insert into users(email, nick, password) value(?, ?, ?);", [newUser.email, newUser.name, newUser.password]);
+    const info = await db.query("insert into users(email, name, password, homeroom, type) value(?, ?, ?, ?, ?);", [newUser.id, newUser.name, newUser.password, newUser.classroom, newUser.type]);
+    const userId = info[0].insertId;
+    await db.query("insert into teachers(id, subject) value(?, ?);", [userId, newUser.subject]);
+    res.status(200).json({ success: true, msg: "user joined successfully" });
+  } catch(err) {
+    logger.error(err);
+    console.error(err);
+    next(err);
+  }
+});
+
+// parent join
+router.post("/join/parent", isNotLoggedIn, async (req, res, next) => {
+  const { id, name, password, classroom } = req.body;
+
+  const result = await db.query("select * from users where email=?", [id]);
+  const user = result[0][0];
+  if (user) return res.json({ success: false, msg: "user already exists" });
+  try {
+    const hash = await bcrypt.hash(password, 12);
+    const newUser = {
+      id,
+      name,
+      password: hash,
+      classroom,
+      type: "parent",
+      manner: 100
+    };
+    const info = await db.query("insert into users(email, name, password, homeroom, type) value(?, ?, ?, ?, ?);", [newUser.id, newUser.name, newUser.password, newUser.classroom, newUser.type]);
+    const userId = info[0].insertId;
+    await db.query("insert into parents(id, manner) value(?, ?);", [userId, newUser.manner]);
     res.status(200).json({ success: true, msg: "user joined successfully" });
   } catch(err) {
     logger.error(err);
