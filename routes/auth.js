@@ -44,7 +44,7 @@ router.post("/join/parent", isNotLoggedIn, async (req, res, next) => {
   const { id, name, password, classroom } = req.body;
 
   console.log(req);
-  console.log(req.body);
+  // console.log(req.body);
 
   const result = await db.query("select * from users where email=?", [id]);
   const user = result[0][0];
