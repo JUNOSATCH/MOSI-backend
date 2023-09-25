@@ -2,9 +2,9 @@ const express = require("express");
 const multer = require("multer");
 const fs = require("fs");
 const path = require("path");
+const FormData = require("form-data");
 const db = require("../config/database");
-
-const { isLoggedIn } = require("./middlewares");
+const Axios = require("axios").default;
 
 try {
   fs.readdirSync('audios');
@@ -38,14 +38,22 @@ const audioUpload = upload.fields([
 ]);
 
 
-router.post("/new", audioUpload, (req, res, next) => {
-  console.log(req.files);
-  console.log(req.body);
-  res.json({ success: true });
-  // console.log(req.file);
-  // const originalUrl = req.file.location;
-  // const url = originalUrl.replace(/\/original\//, "/thumb/");
-  // res.json({ success: true, url, originalUrl });
+router.post("/new", audioUpload, async (req, res, next) => {
+  const formData = new FormData();
+  formData.append(
+    'file',
+    fs.createReadStream(path.join("/Users/youngmin/Desktop/SYM/Code/Project/2023Hackerton", req.files.file[0].path)),
+  );
+  const url = 'http://1288-35-201-249-213.ngrok-free.app/audio';
+  const response = await Axios({
+    method: 'post',
+    url,
+    data: formData,
+    headers: {
+      ...formData.getHeaders(),
+    },
+  });
+  res.status(200).json(response.data);
 });
 
 router.get("/list/:teacher", async (req, res, next) => {

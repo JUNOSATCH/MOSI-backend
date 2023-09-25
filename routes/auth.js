@@ -43,6 +43,7 @@ router.post("/join/teacher", isNotLoggedIn, async (req, res, next) => {
 router.post("/join/parent", isNotLoggedIn, async (req, res, next) => {
   const { id, name, password, classroom } = req.body;
 
+  console.log(req);
   console.log(req.body);
 
   const result = await db.query("select * from users where email=?", [id]);
@@ -84,7 +85,7 @@ router.post("/login", isNotLoggedIn, (req, res, next) => {
         console.error(errLogin);
         next(errLogin);
       }
-      res.status(200).json({ msg: "logged in successfully" });
+      res.status(200).json({ success: true, msg: "logged in successfully" });
     });
   })(req, res, next);
 });
