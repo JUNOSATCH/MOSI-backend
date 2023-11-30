@@ -13,11 +13,11 @@ try {
   fs.mkdirSync('audios');
 }
 
-const url = "https://onnfgxou82.execute-api.ap-northeast-2.amazonaws.com/Test/asdfasdf";
+const url = process.env.LAMBDA_URL;
 
 class ClovaSpeechClient {
-  invokeUrl = "https://clovaspeech-gw.ncloud.com/external/v1/6425/ecdd3e4a16f4cd304b166ab546e96844bf8f04ac41c8a0db88d27f26e23fe11f";
-  secret = "aff8370fd4274d04b18a1b0d63565e81";
+  invokeUrl = process.env.CLOVA_URL;
+  secret = process.env.CLOVA_KEY;
   // invokeUrl = process.env.CLOVA_URL;
   // secret = process.env.CLOVA_KEY;
 
