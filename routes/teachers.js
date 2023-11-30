@@ -16,6 +16,7 @@ const getAll = async () => {
   return teachers;
 }
 
+// 전체 선생님 목록
 router.get("/all", async (req, res, next) => {
   try {
     const teachers = await getAll();
@@ -26,27 +27,33 @@ router.get("/all", async (req, res, next) => {
   }
 });
 
+// 학급으로 검색: 담임선생님 검색
 router.get("/classroom/:classroom", async (req, res, next) => {
   try {
     const classroom = decodeURI(req.params.classroom);
     const teacher = await getHomeroom(classroom);
-    res.status(200).json({ success: true, teacher });
+    if (teacher == undefined) res.status(200).json({ success: false });
+    else res.status(200).json({ success: true, teacher: teacher });
   } catch(err) {
     console.error(err);
     next(err);
   }
 });
 
+// 메인페이지 표시용 목록: 담임선생님이 가장 앞에
 router.get("/main/:classroom", async (req, res, next) => {
   try {
     const classroom = decodeURI(req.params.classroom);
     const homeroom = await getHomeroom(classroom);
     const teachers = await getAll();
-    const result = [homeroom];
-    teachers.forEach((teacher) => {
-      if (homeroom.id != teacher.id) result.push(teacher);
-    });
-    console.log(result);
+    let result = []
+    if (homeroom != undefined) {
+      result.push(homeroom);
+      teachers.forEach((teacher) => {
+        if (homeroom.id != teacher.id) result.push(teacher);
+      });
+    }
+    else result = teachers;
     res.status(200).json({ success: true, teachers: result });
   } catch(err) {
     console.error(err);
