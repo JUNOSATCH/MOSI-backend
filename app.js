@@ -4,20 +4,14 @@ const dotenv = require("dotenv");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
-const passport = require("passport");
-const logger = require("./config/logger");
 const cors = require("cors");
 
 // import files
-const authRouter = require("./routes/auth");
-const teachersRouter = require("./routes/teachers");
-const callRouter = require("./routes/call");
 const apiRouter = require("./routes/api");
-const passportConfig = require("./passport/index");
+const dialogueRouter = require("./routes/dialogue");
 
 // config
 dotenv.config();
-passportConfig();
 
 // create app
 const app = express();
@@ -40,14 +34,10 @@ app.use(session({
     secure: false
   }
 }));
-app.use(passport.initialize());
-app.use(passport.session());
 
 // routers
-app.use("/auth", authRouter);
-app.use("/teachers", teachersRouter);
-app.use("/call", callRouter);
 app.use("/api", apiRouter);
+app.use("/dialogue", dialogueRouter);
 
 app.use((req, res) => {
   const err = new Error(`${req.method} ${req.url} 라우터가 없습니다.`);
@@ -55,13 +45,11 @@ app.use((req, res) => {
 });
 
 app.use((err, req, res, next) => {
-  logger.error(err);
   console.error(err);
   res.status(500).json(err);
 });
 
 // app listening
 app.listen(app.get("port"), (req, res) => {
-  logger.info(`Server running on PORT ${app.get("port")}...`);
   console.log(`Server running on PORT ${app.get("port")}...`);
 });
